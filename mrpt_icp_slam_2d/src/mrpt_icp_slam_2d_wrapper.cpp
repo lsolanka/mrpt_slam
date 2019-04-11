@@ -340,7 +340,7 @@ void ICPslamWrapper::laserCallback(const sensor_msgs::LaserScan &_msg) {
     mrpt_bridge::convert(_msg, laser_poses_[_msg.header.frame_id], *laser);
     // CObservation::Ptr obs = CObservation::Ptr(laser);
     observation = CObservation::Ptr(laser);
-    stamp = ros::Time(0);
+    stamp = _msg.header.stamp;
     tictac.Tic();
     mapBuilder.processObservation(observation);
     t_exec = tictac.Tac();
@@ -380,7 +380,7 @@ void ICPslamWrapper::publishMapPose() {
   if (pm) {
     sensor_msgs::PointCloud _msg;
     std_msgs::Header header;
-    header.stamp = ros::Time(0);
+    header.stamp = ros::Time::now();
     header.frame_id = global_frame_id;
     // if we have new map for current sensor update it
     mrpt_bridge::point_cloud::mrpt2ros(*pm, header, _msg);
@@ -490,7 +490,7 @@ bool ICPslamWrapper::rawlogPlay() {
         if (pm) {
           sensor_msgs::PointCloud _msg;
           std_msgs::Header header;
-          header.stamp = ros::Time(0);
+          header.stamp = ros::Time::now();
           header.frame_id = global_frame_id;
           // if we have new map for current sensor update it
           mrpt_bridge::point_cloud::mrpt2ros(*pm, header, _msg);
@@ -529,7 +529,6 @@ void ICPslamWrapper::publishTF() {
   mrpt::poses::CPose3D robotPoseTF;
   mapBuilder.getCurrentPoseEstimation()->getMean(robotPoseTF);
 
-  stamp = ros::Time(0);
   tf::Stamped<tf::Pose> odom_to_map;
   tf::Transform tmp_tf;
   mrpt_bridge::convert(robotPoseTF, tmp_tf);
@@ -558,7 +557,7 @@ void ICPslamWrapper::updateTrajectoryTimerCallback(
     const ros::TimerEvent &event) {
   ROS_DEBUG("update trajectory");
   path.header.frame_id = global_frame_id;
-  path.header.stamp = ros::Time(0);
+  path.header.stamp = ros::Time::now();
   path.poses.push_back(pose);
 }
 
