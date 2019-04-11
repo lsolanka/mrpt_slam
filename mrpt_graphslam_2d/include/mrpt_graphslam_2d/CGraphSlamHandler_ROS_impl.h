@@ -457,15 +457,6 @@ bool CGraphSlamHandler_ROS<GRAPH_T>::usePublishersBroadcasters() {
   // TODO - potential error in the rotation, investigate this
 	m_broadcaster.sendTransform(anchor_base_link_transform);
 
-  // anchor frame <=> odom frame
-  //
-  // make sure that we have received odometry information in the first
-  // place...
-  // the corresponding field would be initialized
-  if (!m_anchor_odom_transform.child_frame_id.empty()) {
-  	m_broadcaster.sendTransform(m_anchor_odom_transform);
-  }
-
   // set an arrow indicating the current orientation of the robot
   {
 		geometry_msgs::PoseStamped geom_pose;
@@ -640,32 +631,6 @@ void CGraphSlamHandler_ROS<GRAPH_T>::sniffOdom(
   this->m_logger->logFmt(
 	  	LVL_DEBUG,
 	  	"sniffOdom: Received an odometry msg. Converting it to MRPT format...");
-
-  // update the odometry frame with regards to the anchor
-  {
-		// header
-		m_anchor_odom_transform.header.frame_id = m_anchor_frame_id;
-		m_anchor_odom_transform.header.stamp = ros_odom->header.stamp;
-		m_anchor_odom_transform.header.seq = ros_odom->header.seq;
-
-		m_anchor_odom_transform.child_frame_id = m_odom_frame_id;
-
-		//
-		// copy ros_odom ==> m_anchor_odom
-		//
-
-		// translation
-		m_anchor_odom_transform.transform.translation.x =
-	  	ros_odom->pose.pose.position.x;
-		m_anchor_odom_transform.transform.translation.y =
-	  	ros_odom->pose.pose.position.y;
-		m_anchor_odom_transform.transform.translation.z =
-			ros_odom->pose.pose.position.z;
-
-		// quaternion
-		m_anchor_odom_transform.transform.rotation =
-			ros_odom->pose.pose.orientation;
-  }
 
   // build and fill an MRPT CObservationOdometry instance for manipulation from
   // the main algorithm

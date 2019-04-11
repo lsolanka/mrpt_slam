@@ -304,9 +304,6 @@ class CGraphSlamHandler_ROS :
 	 	 * \brief Variables that setup the geometrical dimensions, distances between
 	 	 * the different robot parts etc.
 	 	 */
-		/**\{*/
-		geometry_msgs::TransformStamped m_anchor_odom_transform;
-		/**\}*/
 
 		/**\brief Odometry path of the robot.
 	 	 * Handy mostly for visualization reasons.
